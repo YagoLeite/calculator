@@ -29,10 +29,12 @@ const btnList = [
   "0",
   "%",
   "=",
+  "(",
+  ")",
 ];
 
 function App() {
-  const [state, setState] = useState(["2 + 3(2 + 1)", ""]);
+  const [state, setState] = useState([""]);
 
   const lastItem = state[0].split(" ")[state[0].split(" ").length - 1];
 
@@ -44,97 +46,26 @@ function App() {
     setState((prev) => [prev[0] + str, prev[1]]);
   };
 
+  const openingP = () => {
+    console.log(state);
+    console.log(lastItem);
+  };
+
+  const closingP = () => {
+    if (state[0].length === 0 || lastItem === "×" || lastItem === "+")
+      return setState((prev) => [prev[0], prev[1]]);
+  };
+
   const operatorHandler = (str) => {
     if (state[0].length === 0) return setState((prev) => [prev[0], prev[1]]);
 
-    if (str === "×") {
-      if (state[0][state[0].length - 2] === "×") {
-        setState((prev) => [prev[0], prev[1]]);
-      } else if (
-        state[0][state[0].length - 2] === "+" ||
-        state[0][state[0].length - 2] === "-" ||
-        state[0][state[0].length - 2] === "^" ||
-        state[0][state[0].length - 2] === "÷"
-      ) {
-        setState((prev) => [
-          prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
-          prev[1],
-        ]);
-      } else {
-        setState((prev) => [prev[0] + ` ${str} `, prev[1]]);
-      }
-    }
-
-    if (str === "+") {
-      if (state[0][state[0].length - 2] === "+") {
-        setState((prev) => [prev[0], prev[1]]);
-      } else if (
-        state[0][state[0].length - 2] === "×" ||
-        state[0][state[0].length - 2] === "-" ||
-        state[0][state[0].length - 2] === "^" ||
-        state[0][state[0].length - 2] === "÷"
-      ) {
-        setState((prev) => [
-          prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
-          prev[1],
-        ]);
-      } else {
-        setState((prev) => [prev[0] + ` ${str} `, prev[1]]);
-      }
-    }
-
-    if (str === "÷") {
-      if (state[0][state[0].length - 2] === "÷") {
-        setState((prev) => [prev[0], prev[1]]);
-      } else if (
-        state[0][state[0].length - 2] === "×" ||
-        state[0][state[0].length - 2] === "-" ||
-        state[0][state[0].length - 2] === "^" ||
-        state[0][state[0].length - 2] === "+"
-      ) {
-        setState((prev) => [
-          prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
-          prev[1],
-        ]);
-      } else {
-        setState((prev) => [prev[0] + ` ${str} `, prev[1]]);
-      }
-    }
-
-    if (str === "-") {
-      if (state[0][state[0].length - 2] === "-") {
-        setState((prev) => [prev[0], prev[1]]);
-      } else if (
-        state[0][state[0].length - 2] === "×" ||
-        state[0][state[0].length - 2] === "÷" ||
-        state[0][state[0].length - 2] === "^" ||
-        state[0][state[0].length - 2] === "+"
-      ) {
-        setState((prev) => [
-          prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
-          prev[1],
-        ]);
-      } else {
-        setState((prev) => [prev[0] + ` ${str} `, prev[1]]);
-      }
-    }
-
-    if (str === "^") {
-      if (state[0][state[0].length - 2] === "^") {
-        setState((prev) => [prev[0], prev[1]]);
-      } else if (
-        state[0][state[0].length - 2] === "+" ||
-        state[0][state[0].length - 2] === "×" ||
-        state[0][state[0].length - 2] === "-" ||
-        state[0][state[0].length - 2] === "÷"
-      ) {
-        setState((prev) => [
-          prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
-          prev[1],
-        ]);
-      } else {
-        setState((prev) => [prev[0] + ` ${str} `, prev[1]]);
-      }
+    if (lastItem === "") {
+      setState((prev) => [
+        prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
+        prev[1],
+      ]);
+    } else {
+      setState((prev) => [prev[0] + ` ${str} `, prev[1]]);
     }
   };
 
@@ -393,6 +324,34 @@ function App() {
           height="80px"
           color="black"
           onClick={funcHandler}
+        >
+          {str}
+        </Button>
+      );
+    }
+    if (str === "(") {
+      return (
+        <Button
+          cursor="pointer"
+          fontSize="25px"
+          colorScheme="teal"
+          color="black"
+          height="80px"
+          onClick={openingP}
+        >
+          {str}
+        </Button>
+      );
+    }
+    if (str === ")") {
+      return (
+        <Button
+          cursor="pointer"
+          fontSize="25px"
+          colorScheme="teal"
+          color="black"
+          height="80px"
+          onClick={closingP}
         >
           {str}
         </Button>
