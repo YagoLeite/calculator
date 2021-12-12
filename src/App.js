@@ -49,11 +49,21 @@ function App() {
   const openingP = () => {
     console.log(state);
     console.log(lastItem);
+    if (state[0].length === 0) {
+      setState((prev) => ["( ", prev[1]]);
+    } else if (lastItem === "") {
+      setState((prev) => [prev[0] + "( ", prev[1]]);
+    } else {
+      setState((prev) => [`${prev[0]} × ( `, prev[1]]);
+    }
   };
 
   const closingP = () => {
-    if (state[0].length === 0 || lastItem === "×" || lastItem === "+")
-      return setState((prev) => [prev[0], prev[1]]);
+    if (lastItem === "") {
+      setState((prev) => [prev[0], prev[1]]);
+    } else {
+      setState((prev) => [`${prev[0]} ) `]);
+    }
   };
 
   const operatorHandler = (str) => {
