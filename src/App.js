@@ -59,6 +59,8 @@ function App() {
   };
 
   const closingP = () => {
+    console.log(state);
+    console.log(lastItem);
     if (lastItem === "") {
       setState((prev) => [prev[0], prev[1]]);
     } else {
@@ -100,10 +102,34 @@ function App() {
   };
 
   const eva = (arr) => {
-    if (arr.length === 1)
+    if (arr.length === 1) {
       return setState((prev) => [arr[0].toString(), prev[1]]);
+    }
     let newArr = arr;
     for (let i = 0; i < arr.length; i++) {
+      if (arr.includes("(")) {
+        const reversed = arr.slice(0).reverse();
+        const firstIndex = arr.findIndex((e) => e === "(");
+        const lastIndex = reversed.findIndex((e) => e === ")");
+        const middleThing = arr.slice(
+          firstIndex + 1,
+          arr.length - 1 - lastIndex
+        );
+        newArr = [
+          ...arr.slice(0, firstIndex + 1),
+          eva(middleThing),
+          ...arr.slice(arr.length - 1 - lastIndex),
+        ];
+        if (middleThing.length === 1) {
+          newArr = [
+            ...arr.slice(0, firstIndex),
+            ...middleThing,
+            ...arr.slice(arr.length - lastIndex),
+          ];
+          return eva(newArr);
+        }
+        return eva(newArr);
+      }
       if (arr[i] === "^") {
         newArr = [
           ...arr.slice(0, i - 1),
