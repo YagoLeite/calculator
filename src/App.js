@@ -1,7 +1,6 @@
 import "./App.css";
 import { Box, Center, SimpleGrid, Button } from "@chakra-ui/react";
 import { useState } from "react";
-import { create, all } from "mathjs";
 import Display from "./Components/Display";
 
 const btnList = [
@@ -39,7 +38,7 @@ function App() {
   const lastItem = state[0].split(" ")[state[0].split(" ").length - 1];
 
   const processedState = (str) => {
-    return str.split(" ");
+    return str.trim().split(" ");
   };
 
   const numberHandler = (str) => {
@@ -101,6 +100,88 @@ function App() {
     }
   };
 
+  const copyEva = (arr) => {
+    if (arr.length === 1) {
+      return arr;
+    }
+    let newArr = arr;
+    for (let i = 0; i < arr.length; i++) {
+      if (arr.includes("(")) {
+        const reversed = arr.slice(0).reverse();
+        const firstIndex = arr.findIndex((e) => e === "(");
+        const lastIndex = reversed.findIndex((e) => e === ")");
+        const middleThing = arr.slice(
+          firstIndex + 1,
+          arr.length - 1 - lastIndex
+        );
+        newArr = [
+          ...arr.slice(0, firstIndex + 1),
+          copyEva(middleThing),
+          ...arr.slice(arr.length - 1 - lastIndex),
+        ];
+        if (middleThing.length === 1) {
+          newArr = [
+            ...arr.slice(0, firstIndex),
+            ...middleThing,
+            ...arr.slice(arr.length - lastIndex),
+          ];
+          return copyEva(newArr);
+        }
+        return copyEva(newArr);
+      }
+      if (arr[i] === "^") {
+        newArr = [
+          ...arr.slice(0, i - 1),
+          Math.pow(arr[i - 1], arr[i + 1]),
+          ...arr.slice(i + 2),
+        ];
+        return copyEva(newArr);
+      } else if (!arr.includes("^") && arr[i] === "×") {
+        newArr = [
+          ...arr.slice(0, i - 1),
+          arr[i - 1] * arr[i + 1],
+          ...arr.slice(i + 2),
+        ];
+        return copyEva(newArr);
+      } else if (arr[i] === "÷") {
+        if (arr[i + 1] === "0") {
+          return setState((prev) => [`You can't divide by 0`, prev[1]]);
+        }
+        newArr = [
+          ...arr.slice(0, i - 1),
+          +arr[i - 1] / +arr[i + 1],
+          ...arr.slice(i + 2),
+        ];
+        return copyEva(newArr);
+      } else if (
+        !arr.includes("^") &&
+        !arr.includes("×") &&
+        !arr.includes("÷") &&
+        arr[i] === "+"
+      ) {
+        newArr = [
+          ...arr.slice(0, i - 1),
+          +arr[i - 1] + +arr[i + 1],
+          ...arr.slice(i + 2),
+        ];
+        return copyEva(newArr);
+      } else if (
+        !arr.includes("^") &&
+        !arr.includes("×") &&
+        !arr.includes("÷") &&
+        arr[i] === "-"
+      ) {
+        newArr = [
+          ...arr.slice(0, i - 1),
+          +arr[i - 1] - +arr[i + 1],
+          ...arr.slice(i + 2),
+        ];
+        return copyEva(newArr);
+      }
+    }
+    return copyEva(newArr);
+  };
+
   const eva = (arr) => {
     if (arr.length === 1) {
       return setState((prev) => [arr[0].toString(), prev[1]]);
@@ -117,7 +198,7 @@ function App() {
         );
         newArr = [
           ...arr.slice(0, firstIndex + 1),
-          eva(middleThing),
+          copyEva(middleThing),
           ...arr.slice(arr.length - 1 - lastIndex),
         ];
         if (middleThing.length === 1) {
@@ -429,7 +510,6 @@ function App() {
         fontFamily="Roboto"
         fontSize="70px"
         borderRadius="10px"
-        w="325px"
         boxShadow="dark-lg"
       >
         <Display state={state} />
