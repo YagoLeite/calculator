@@ -70,7 +70,9 @@ function App() {
   const operatorHandler = (str) => {
     if (state[0].length === 0) return setState((prev) => [prev[0], prev[1]]);
 
-    if (lastItem === "") {
+    if (state[0].split(" ")[state[0].split(" ").length - 2] === ")") {
+      setState((prev) => [prev[0] + `${str} `, prev[1]]);
+    } else if (lastItem === "") {
       setState((prev) => [
         prev[0].slice(0, prev[0].length - 3) + ` ${str} `,
         prev[1],
